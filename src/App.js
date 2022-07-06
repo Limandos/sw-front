@@ -2,35 +2,31 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 
-import Peoples from "./Peoples"
-import Planets from "./Planets"
-import Films from "./Films"
-import Film from "./Film"
+import Peoples from "./Components/People/Peoples"
+import Planets from "./Components/Planets/Planets"
+import Films from "./Components/Films/Films"
+import Film from "./Components/Films/Film"
+import Home from "./Components/Home"
+import Menu from "./Components/Menu"
 
 function App() {
   return (
+    <div>
       <Router>
-        <div>
-          <nav>
-                <Link to="/">Home Page </Link>
-                <Link to="/people">People </Link>
-                <Link to="/planets">Planets </Link>
-                <Link to="/films">Films </Link>
-          </nav>
-
-          <Routes>
-            <Route path="/people" element={<Peoples/>}/>
-            <Route path="/planets" element={<Planets/>}/>
-            <Route path="/films" element={<Films/>}/>
-
-            <Route path="/films/:id" element={<Film />}/>
-          </Routes>
-        </div>
+        <Menu />
+        
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+           <Route path="/people" element={<Peoples/>}/>
+           <Route path="/planets" element={<Planets/>}/>
+           <Route path="/films" element={<Films/>}/>
+           <Route path="/films/:id" element={<Film />}/>
+         </Routes>
       </Router>
+    </div>
   );
 }
 
