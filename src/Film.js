@@ -1,4 +1,5 @@
 import React from "react";
+import FilmPeople from "./FilmPeople";
 
 export default class Film extends React.Component {
     constructor(props) {
@@ -11,8 +12,12 @@ export default class Film extends React.Component {
             opening_crawl: null,
             director: null,
             producer: null,
-            release_date: null
+            release_date: null,
+            characters: [],
+            showCharacters: false
           };
+          
+          this.charactersClick = this.charactersClick.bind(this);
     }
 
     componentDidMount() {
@@ -26,7 +31,8 @@ export default class Film extends React.Component {
                 opening_crawl: result.opening_crawl,
                 director: result.director,
                 producer: result.producer,
-                release_date: result.release_date
+                release_date: result.release_date,
+                characters: result.characters
             });
             },
             (error) => {
@@ -36,6 +42,10 @@ export default class Film extends React.Component {
             });
             }
         )
+    }
+
+    charactersClick(){
+        this.setState({showCharacters: true});
     }
   
     render() {
@@ -48,7 +58,11 @@ export default class Film extends React.Component {
             <div>
                 <h1>Episode {this.state.episode_id}: {this.state.title}</h1>
                 <p>{this.state.opening_crawl}</p>
-                <h2>{this.state.producer}</h2>
+                <h2>Director: {this.state.director}</h2>
+                <h2>Producer: {this.state.producer}</h2>
+                <h3>Release Date: {this.state.release_date}</h3>
+                <button onClick={this.charactersClick}>Characters ({this.showCharacters ? 'on' : 'off'})</button>
+                {this.showCharacters ? <FilmPeople /> : null}
             </div>
         );
       }
