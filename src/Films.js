@@ -7,7 +7,10 @@ export default class Films extends React.Component {
       this.state = {
         error: null,
         isLoaded: false,
-        items: {}
+        count: 0,
+        next: null,
+        previous: null,
+        filmsList: [],
       };
     }
   
@@ -17,7 +20,10 @@ export default class Films extends React.Component {
         .then((result) => {
             this.setState({
               isLoaded: true,
-              items: result.results
+              count: result.count,
+              next: result.next,
+              previous: result.previous,
+              filmsList: result.results
             });
           },
           (error) => {
@@ -27,24 +33,27 @@ export default class Films extends React.Component {
             });
           }
         )
-        console.log(this.state.items)
     }
   
     render() {
-      const { error, isLoaded} = this.state;
-      if (error) {
-        return <div>Ошибка: {error.message}</div>;
-      } else if (!isLoaded) {
-        return <div>Загрузка...</div>;
+      if (this.state.error) {
+        return <div>Error: {this.state.error.message}</div>;
+      } else if (!this.state.isLoaded) {
+        return <div>Loading...</div>;
       } else {
         return (
           <div>
-          {this.items.map(item => (
-            <div>
-                <h1>Фильмы</h1>
-                <h2>Количество: {item.count}</h2>
-            </div>
-          ))}
+            <h1>Films</h1>
+            <h2>Count: {this.state.count}</h2>
+              <div>
+                <nav>
+                  <ul>
+                    {this.state.filmsList.map((item, index) => (
+                      <li><a href={"/films/" + (index + 1)}>Episode {item.episode_id}: {item.title}</a></li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
           </div>
         );
       }

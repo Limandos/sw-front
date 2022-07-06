@@ -6,28 +6,31 @@ import {
   Link
 } from "react-router-dom";
 
-import People from "./People"
+import Peoples from "./Peoples"
 import Planets from "./Planets"
 import Films from "./Films"
+import Film from "./Film"
 
 function App() {
   return (
-    <Router>
-      <div>
-        <nav>
-              <Link to="/">Домой </Link>
-              <Link to="/people">Герои </Link>
-              <Link to="/planets">Планеты </Link>
-              <Link to="/films">Фильмы </Link>
-        </nav>
+      <Router>
+        <div>
+          <nav>
+                <Link to="/">Home Page </Link>
+                <Link to="/people">People </Link>
+                <Link to="/planets">Planets </Link>
+                <Link to="/films">Films </Link>
+          </nav>
 
-        <Routes>
-          <Route path="/people" element={<People/>}/>
-          <Route path="/planets" element={<Planets/>}/>
-          <Route path="/films" element={<Films/>}/>
-        </Routes>
-      </div>
-    </Router>
+          <Routes>
+            <Route path="/people" element={<Peoples/>}/>
+            <Route path="/planets" element={<Planets/>}/>
+            <Route path="/films" element={<Films/>}/>
+
+            <Route path="/films/:id" element={<Film />}/>
+          </Routes>
+        </div>
+      </Router>
   );
 }
 
