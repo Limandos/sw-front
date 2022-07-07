@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import Peoples from "./Components/People/Peoples"
+import People from "./Components/People/People"
 import Planets from "./Components/Planets/Planets"
 import Films from "./Components/Films/Films"
 import Film from "./Components/Films/Film"
@@ -20,10 +21,19 @@ function App() {
         
         <Routes>
           <Route path="/" element={<Home/>}/>
-           <Route path="/people" element={<Peoples/>}/>
-           <Route path="/planets" element={<Planets/>}/>
-           <Route path="/films" element={<Films/>}/>
-           <Route path="/films/:id" element={<Film />}/>
+
+            <Route path="/people">
+              <Route index element={<Peoples />} />
+              <Route path=":id" element={<People/>}/>
+            </Route>
+
+            <Route path="/planets" element={<Planets/>}/>
+
+            <Route path="/films">
+              <Route index element={<Films />} />
+              <Route path=":id" element={<Film/>}/>
+            </Route>
+
          </Routes>
       </Router>
     </div>

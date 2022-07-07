@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const FilmsFunc = () => {
+const Films = () => {
     const [error, setError] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [count, setCount] = useState(0);
@@ -47,4 +47,4 @@ const FilmsFunc = () => {
         }
 }
 
-export default FilmsFunc;
+export default Films;

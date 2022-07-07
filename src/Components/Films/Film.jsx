@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import People from "../People/People";
+import { Link } from "react-router-dom";
 
 const Film = () => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+
     const [title, setTitle] = useState("");
     const [episode_id, setEpisode_id] = useState(0);
     const [opening_crawl, setOpening_crawl] = useState("");
@@ -11,6 +12,11 @@ const Film = () => {
     const [producer, setProducer] = useState("");
     const [release_date, setRelease_date] = useState("");
     const [characters, setCharacters] = useState([]);
+    const [planets, setPlanets] = useState([]);
+    const [starships, setStarships] = useState([]);
+    const [vehicles, setVehicles] = useState([]);
+    const [species, setSpecies] = useState([]);
+
     const [showCharacters, setShowCharacters] = useState(false);
 
     useEffect(() => {
@@ -31,12 +37,6 @@ const Film = () => {
               setError(error);
           })}, []);
 
-    const charactersClick = () => {
-        setShowCharacters(!showCharacters);
-        console.log(characters);
-    }
-  
-
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -49,11 +49,7 @@ const Film = () => {
               <h2>Director: {director}</h2>
               <h2>Producer: {producer}</h2>
               <h3>Release Date: {release_date}</h3>
-              <button onClick={charactersClick}>Characters ({showCharacters ? 'on' : 'off'})</button>
-              {showCharacters ? (
-                characters.map(char => 
-                <People character={char}/>))
-                : null}
+              <Link to={"/people?episode=" + episode_id}>Characters</Link>
           </div>
       );
     }
