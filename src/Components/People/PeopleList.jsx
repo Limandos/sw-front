@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import People from "./People";
+import { useSearchParams, useMatch } from "react-router-dom";
+import PeopleShort from "./PeopleShort";
 
-const Peoples = () => {
+const PeopleList = () => {
     const [basePage, setBasePage] = useState(false);
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -11,6 +11,9 @@ const Peoples = () => {
     const [episodeName, setEpisodeName] = useState("");
 
     const [searchParams] = useSearchParams();
+
+    for (const entry of searchParams.entries())
+        console.log(entry);
 
     useEffect(() => {
         if (!searchParams.get("episode")) {
@@ -44,9 +47,9 @@ const Peoples = () => {
         else return (
             <div>
                 <h1>People {basePage ? null : "from " + episodeName}</h1>
-                {basePage ? listCharacters.map(char => <People character={char.url}/>) : listCharacters.map(char => <People character={char}/>)}
+                {basePage ? listCharacters.map(char => <PeopleShort character={char.url}/>) : listCharacters.map(char => <PeopleShort character={char}/>)}
             </div>
         );
 }
 
-export default Peoples;
+export default PeopleList;

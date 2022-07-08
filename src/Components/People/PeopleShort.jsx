@@ -1,35 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const People = () => {
+const PeopleShort = ({character}) => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [name, setName] = useState("");
-    const [height, setHeight] = useState(0);
-    const [mass, setMass] = useState(0);
-    const [hair_color, setHair_color] = useState("");
-    const [skin_color, setSkin_color] = useState("");
-    const [eye_color, setEye_color] = useState("");
     const [birth_year, setBirth_year] = useState(0);
     const [gender, setGender] = useState("");
     const [homeworld, setHomeworld] = useState("");
-
-    const { id } = useParams();
+    const [url, setUrl] = useState("");
 
     useEffect(() => {
-        fetch("https://swapi.dev/api/people/" + id)
+        fetch(character)
         .then(res => res.json())
         .then((result) => {
                 setIsLoaded(true);
                 setName(result.name);
-                setHeight(result.height);
-                setMass(result.mass);
-                setHair_color(result.hair_color);
-                setSkin_color(result.skin_color);
-                setEye_color(result.eye_color);
                 setBirth_year(result.birth_year);
                 setGender(result.gender);
                 setHomeworld(result.homeworld);
+                setUrl(result.url);
             },
             (error) => {
                 setIsLoaded(true);
@@ -38,8 +28,6 @@ const People = () => {
         );
     });
 
-    
-
     if (error) {
         return <div>Error: {error.message}</div>;
       } else if (!isLoaded) {
@@ -47,10 +35,14 @@ const People = () => {
       } else {
         return (
             <div>
-                <h4>{name}</h4>
+                <Link to={"/" + url.substring(url.indexOf("people"))}><h2>{name}</h2>
+                    <h5>Gender: {gender}</h5>
+                    <h5>Birth year: {birth_year}</h5>
+                    <h5>Homeworld: {homeworld}</h5>
+                </Link>
             </div>
         );
       }
 }
 
-export default People;
+export default PeopleShort;
