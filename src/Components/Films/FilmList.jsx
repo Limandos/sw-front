@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
 import FilmShort from "./FilmShort";
 
 const FilmList = () => {
@@ -9,12 +8,13 @@ const FilmList = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [filmsList, setFilmsList] = useState([]);
-  const [paramName, setParamName] = useState("");
 
   const [searchParams] = useSearchParams();
 
+  let [ params ] = searchParams.entries()
+
   useEffect(() => {
-    if (!searchParams.get("episode")) {
+    if (!params) {
         setBasePage(true);
         fetch("https://swapi.dev/api/films")
         .then(res => res.json())
@@ -26,7 +26,7 @@ const FilmList = () => {
             setError(error);
         })}
     else {
-        fetch("https://swapi.dev/api/films/" + searchParams.get("episode"))
+        fetch(`https://swapi.dev/api/${params[0]}/${params[1]}`)
         .then(res => res.json())
         .then((result) => {
             setIsLoaded(true);
@@ -43,7 +43,7 @@ const FilmList = () => {
   else if (!isLoaded) return <div>Loading...</div>
       else return (
           <div>
-            <h1>Films {basePage ? null : "with " + paramName}</h1>
+            <h1>Films {basePage ? null : `(custom)`}</h1>
               {basePage ? filmsList.map(film => <FilmShort film={film.url}/>) : filmsList.map(film => <FilmShort film={film}/>)}
           </div>
       );

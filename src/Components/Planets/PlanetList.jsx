@@ -8,12 +8,13 @@ const PlanetList = () => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const [planetList, setPlanetList] = useState([]);
-    const [episodeName, setEpisodeName] = useState("");
 
     const [searchParams] = useSearchParams();
 
+    let [ params ] = searchParams.entries()
+
     useEffect(() => {
-        if (!searchParams.get("episode")) {
+        if (!params) {
             setBasePage(true);
             fetch("https://swapi.dev/api/planets")
             .then(res => res.json())
@@ -25,12 +26,11 @@ const PlanetList = () => {
                 setError(error);
             })}
         else {
-            fetch("https://swapi.dev/api/films/" + searchParams.get("episode"))
+            fetch(`https://swapi.dev/api/${params[0]}/${params[1]}`)
             .then(res => res.json())
             .then((result) => {
                 setIsLoaded(true);
-                setPlanetList(result.characters);
-                setEpisodeName(result.title)
+                setPlanetList(result.planets);
             }, (error) => {
                 setIsLoaded(true);
                 setError(error);
@@ -43,7 +43,7 @@ const PlanetList = () => {
     else if (!isLoaded) return <div>Loading...</div>
         else return (
             <div>
-                <h1>Planets {basePage ? null : "from " + episodeName}</h1>
+                <h1>Planets {basePage ? null : `(custom)`}</h1>
                 {basePage ? planetList.map(plan => <PlanetShort planet={plan.url}/>) : planetList.map(plan => <PlanetShort planet={plan}/>)}
             </div>
         );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Film = () => {
     const [error, setError] = useState(null);
@@ -11,16 +11,11 @@ const Film = () => {
     const [director, setDirector] = useState("");
     const [producer, setProducer] = useState("");
     const [release_date, setRelease_date] = useState("");
-    const [characters, setCharacters] = useState([]);
-    const [planets, setPlanets] = useState([]);
-    const [starships, setStarships] = useState([]);
-    const [vehicles, setVehicles] = useState([]);
-    const [species, setSpecies] = useState([]);
 
-    const [showCharacters, setShowCharacters] = useState(false);
+    let { id } = useParams();
 
     useEffect(() => {
-        fetch("https://swapi.dev/api/" + window.location.pathname)
+        fetch(`https://swapi.dev/api/films/${id}`)
         .then(res => res.json())
         .then((result) => {
             setIsLoaded(true);
@@ -30,7 +25,6 @@ const Film = () => {
             setDirector(result.director);
             setProducer(result.producer);
             setRelease_date(result.release_date);
-            setCharacters(result.characters);
         },
           (error) => {
               setIsLoaded(true);
@@ -49,7 +43,11 @@ const Film = () => {
               <h2>Director: {director}</h2>
               <h2>Producer: {producer}</h2>
               <h3>Release Date: {release_date}</h3>
-              <Link to={"/people?episode=" + episode_id}>Characters</Link>
+              <Link to={`/people?films=${id}`}>Characters </Link>
+              <Link to={`/planets?films=${id}`}>Planets </Link>
+              <Link to={`/starships?films=${id}`}>Starships </Link>
+              <Link to={`/vehicles?films=${id}`}>Vehicles </Link>
+              <Link to={`/species?films=${id}`}>Species </Link>
           </div>
       );
     }
