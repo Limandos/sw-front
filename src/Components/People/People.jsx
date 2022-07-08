@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const People = () => {
     const [error, setError] = useState(null);
@@ -38,8 +38,6 @@ const People = () => {
         );
     });
 
-    
-
     if (error) {
         return <div>Error: {error.message}</div>;
       } else if (!isLoaded) {
@@ -47,7 +45,18 @@ const People = () => {
       } else {
         return (
             <div>
-                <h4>{name}</h4>
+                <h1>{name}</h1>
+                <h2>Gender: {gender}</h2>
+                <h2>Height: {height}</h2>
+                <h2>Mass: {mass}</h2>
+                <h3>Hair color: {hair_color}</h3>
+                <h3>Skin color: {skin_color}</h3>
+                <h3>Eye color: {eye_color}</h3>
+                <h3><Link to={`/${homeworld.substring(homeworld.indexOf("planets"))}`}>Homeworld</Link></h3>
+                <Link to={`/films?people=${id}`}>Films </Link>
+                <Link to={`/species?people=${id}`}>Species </Link>
+                <Link to={`/vehicles?people=${id}`}>Vehicles </Link>
+                <Link to={`/starships?people=${id}`}>Starships </Link>
             </div>
         );
       }

@@ -30,7 +30,7 @@ const SpecieList = () => {
         .then(res => res.json())
         .then((result) => {
             setIsLoaded(true);
-            setSpeciesList(result.characters);
+            setSpeciesList(result.species);
         }, (error) => {
             setIsLoaded(true);
             setError(error);

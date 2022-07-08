@@ -36,7 +36,7 @@ const VehicleList = () => {
             setError(error);
         })
     }
-}, []);
+}, [params]);
 
 
   if (error) return <div>Error: {error.message}</div>

@@ -30,7 +30,7 @@ const FilmList = () => {
         .then(res => res.json())
         .then((result) => {
             setIsLoaded(true);
-            setFilmsList(result.characters);
+            setFilmsList(result.films);
         }, (error) => {
             setIsLoaded(true);
             setError(error);

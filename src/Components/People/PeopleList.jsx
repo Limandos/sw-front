@@ -30,13 +30,18 @@ const PeopleList = () => {
             .then(res => res.json())
             .then((result) => {
                 setIsLoaded(true);
-                setListCharacters(result.characters);
+                if (params[0] == "planets")
+                    setListCharacters(result.residents);
+                else if (params[0] == "starships" || params[0] == "vehicles")
+                        setListCharacters(result.pilots);
+                    else
+                        setListCharacters(result.characters);
             }, (error) => {
                 setIsLoaded(true);
                 setError(error);
             })
         }
-    }, []);
+    }, [params]);
 
     if (error)
         return <div>Error: {error.message}</div>
