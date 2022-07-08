@@ -8,10 +8,10 @@ const StarshipList = () => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const [starshipsList, setStarshipsList] = useState([]);
+    const [label, setLabel] = useState("");
 
     const [searchParams] = useSearchParams();
-
-    let [ params ] = searchParams.entries()
+    const [ params ] = searchParams.entries()
 
     useEffect(() => {
         if (!params) {
@@ -31,19 +31,23 @@ const StarshipList = () => {
                 .then((result) => {
                     setIsLoaded(true);
                     setStarshipsList(result.starships);
+                    if (params[0] === "films") 
+                        setLabel(`from ${result.title}`);
+                    else
+                        setLabel(`with ${result.name}`);
                 }, (error) => {
                     setIsLoaded(true);
                     setError(error);
-            })}},
-    []);
+            })}
+    }, [params]);
 
 
     if (error) return <div>Error: {error.message}</div>
     else if (!isLoaded) return <div>Loading...</div>
         else return (
             <div>
-                <h1>Starships {basePage ? null : `(custom)`}</h1>
-                    {basePage ? starshipsList.map(star => <StarshipShort starship={star.url}/>) : starshipsList.map(star => <StarshipShort starship={star}/>)}
+                <h1>Starships {basePage ? null : `${label}`}</h1>
+                    {basePage ? starshipsList.map(star => <StarshipShort starship={star.url} key={star.url}/>) : starshipsList.map(star => <StarshipShort starship={star} key={star.url}/>)}
             </div>
         );
 }

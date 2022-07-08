@@ -8,10 +8,10 @@ const PeopleList = () => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const [listCharacters, setListCharacters] = useState([]);
+    const [label, setLabel] = useState("");
 
     const [searchParams] = useSearchParams();
-
-    let [ params ] = searchParams.entries()
+    const [params] = searchParams.entries()
 
     useEffect(() => {
         if (!params) {
@@ -30,12 +30,16 @@ const PeopleList = () => {
             .then(res => res.json())
             .then((result) => {
                 setIsLoaded(true);
-                if (params[0] == "planets")
+                if (params[0] === "planets")
                     setListCharacters(result.residents);
-                else if (params[0] == "starships" || params[0] == "vehicles")
+                else if (params[0] === "starships" || params[0] === "vehicles")
                         setListCharacters(result.pilots);
                     else
                         setListCharacters(result.characters);
+                if (params[0] === "films") 
+                    setLabel(`from ${result.title}`);
+                else
+                    setLabel(`with ${result.name}`);
             }, (error) => {
                 setIsLoaded(true);
                 setError(error);
@@ -48,8 +52,8 @@ const PeopleList = () => {
     else if (!isLoaded) return <div>Loading...</div>
         else return (
             <div>
-                <h1>People {basePage ? null : `(custom)`}</h1>
-                {basePage ? listCharacters.map(char => <PeopleShort character={char.url}/>) : listCharacters.map(char => <PeopleShort character={char}/>)}
+                <h1>People {basePage ? null : `${label}`}</h1>
+                {basePage ? listCharacters.map(char => <PeopleShort character={char.url} key={char.url}/>) : listCharacters.map(char => <PeopleShort character={char} key={char.url}/>)}
             </div>
         );
 }

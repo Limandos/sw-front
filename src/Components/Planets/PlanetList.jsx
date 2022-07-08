@@ -8,10 +8,10 @@ const PlanetList = () => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const [planetList, setPlanetList] = useState([]);
+    const [label, setLabel] = useState("");
 
     const [searchParams] = useSearchParams();
-
-    let [ params ] = searchParams.entries()
+    const [ params ] = searchParams.entries()
 
     useEffect(() => {
         if (!params) {
@@ -31,20 +31,24 @@ const PlanetList = () => {
             .then((result) => {
                 setIsLoaded(true);
                 setPlanetList(result.planets);
+                if (params[0] === "films") 
+                    setLabel(`from ${result.title}`);
+                else
+                    setLabel(`with ${result.name}`);
             }, (error) => {
                 setIsLoaded(true);
                 setError(error);
             })
         }
-    }, []);
+    }, [params]);
 
     if (error)
         return <div>Error: {error.message}</div>
     else if (!isLoaded) return <div>Loading...</div>
         else return (
             <div>
-                <h1>Planets {basePage ? null : `(custom)`}</h1>
-                {basePage ? planetList.map(plan => <PlanetShort planet={plan.url}/>) : planetList.map(plan => <PlanetShort planet={plan}/>)}
+                <h1>Planets {basePage ? null : `${label}`}</h1>
+                {basePage ? planetList.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : planetList.map(plan => <PlanetShort planet={plan} key={plan.url}/>)}
             </div>
         );
 }
