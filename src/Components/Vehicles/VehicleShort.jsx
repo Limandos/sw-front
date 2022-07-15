@@ -1,45 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "./Vehicles.module.css";
+import { getData } from "../../API";
 
 const VehicleShort = ({vehicle}) => {
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [name, setName] = useState("");
-    const [model, setModel] = useState("");
-    const [costInCredits, setCostInCredits] = useState(0);
-    const [maxAtmospheringSpeed, setMaxAtmospheringSpeed] = useState("");
-    const [url, setUrl] = useState("");
-
     useEffect(() => {
-        fetch(vehicle)
-        .then(res => res.json())
-        .then((result) => {
-                setIsLoaded(true);
-                setName(result.name);
-                setModel(result.model);
-                setCostInCredits(result.cost_in_credits);
-                setMaxAtmospheringSpeed(result.max_atmosphering_speed);
-                setUrl(result.url);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
+        getData(vehicle).then(res => {
+            setIsLoaded(true);
+            if (res.success) {
+                setResult(res);
             }
-        );
-    });
+        })
+        .catch(error => {;
+            console.error(error);
+        });
+      }, [vehicle]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-      } else if (!isLoaded) {
+      if (!isLoaded) {
         return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
       } else {
         return (
-            <div>
-                <Link to={"/" + url.substring(url.indexOf("vehicles"))}><h2>{name}</h2>
-                    <h5>Model: {model}</h5>
-                    <h5>Cost in credits: {costInCredits}</h5>
-                    <h5>Max atmosphering speed: {maxAtmospheringSpeed}</h5>
+            <div className={styles.listElement}>
+                <Link to={"/" + result.url.substring(result.url.indexOf("vehicles"))}>
+                    {result.name}<br />
+                    Model: {result.model}<br />
+                    Cost in credits: {result.cost_in_credits}<br />
+                    Max atmosphering speed: {result.max_atmosphering_speed}<br />
                 </Link>
             </div>
         );

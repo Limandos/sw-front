@@ -1,56 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PlanetShort from "./PlanetShort";
+import { getData } from "../../API";
 
 const PlanetList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [planetList, setPlanetList] = useState([]);
-    const [label, setLabel] = useState("");
+    const [result, setResult] = useState([]);
 
     const [searchParams] = useSearchParams();
-    const [ params ] = searchParams.entries()
 
     useEffect(() => {
-        if (!params) {
+        if (!searchParams.get("category")) {
             setBasePage(true);
-            fetch("https://swapi.dev/api/planets")
-            .then(res => res.json())
-            .then((result) => {
+            getData(`https://swapi.dev/api/planets/`).then(res => {
                 setIsLoaded(true);
-                setPlanetList(result.results);
-            }, (error) => {
-                setIsLoaded(true);
-                setError(error);
-            })}
-        else {
-            fetch(`https://swapi.dev/api/${params[0]}/${params[1]}`)
-            .then(res => res.json())
-            .then((result) => {
-                setIsLoaded(true);
-                setPlanetList(result.planets);
-                if (params[0] === "films") 
-                    setLabel(`from ${result.title}`);
-                else
-                    setLabel(`with ${result.name}`);
-            }, (error) => {
-                setIsLoaded(true);
-                setError(error);
+                if (res.success) {
+                    setResult(res);
+                }
             })
+            .catch(error => {;
+            console.error(error);
+            });
         }
-    }, [params]);
+        else {
+            getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
+                setIsLoaded(true);
+                if (res.success) {
+                    setResult(res);
+                }
+            })
+            .catch(error => {;
+            console.error(error);
+            });
+        }
+    }, [searchParams]);
 
-    if (error)
-        return <div>Error: {error.message}</div>
-    else if (!isLoaded) return <div>Loading...</div>
-        else return (
+    if (!isLoaded) {
+        return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
+      } else {
+        return (
             <div>
-                <h1>Planets {basePage ? null : `${label}`}</h1>
-                {basePage ? planetList.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : planetList.map(plan => <PlanetShort planet={plan} key={plan.url}/>)}
+                <h1>Planets {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
+                {basePage ? result.results.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : result.planets.map(plan => <PlanetShort planet={plan} key={plan.url}/>)}
             </div>
         );
+      }
 }
 
 export default PlanetList;

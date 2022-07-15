@@ -1,61 +1,66 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PeopleShort from "./PeopleShort";
+import { getData } from "../../API";
 
 const PeopleList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [listCharacters, setListCharacters] = useState([]);
-    const [label, setLabel] = useState("");
+    const [result, setResult] = useState([]);
 
     const [searchParams] = useSearchParams();
-    const [params] = searchParams.entries()
 
     useEffect(() => {
-        if (!params) {
+        if (!searchParams.get("category")) {
             setBasePage(true);
-            fetch("https://swapi.dev/api/people")
-            .then(res => res.json())
-            .then((result) => {
+            getData(`https://swapi.dev/api/people/`).then(res => {
                 setIsLoaded(true);
-                setListCharacters(result.results);
-            }, (error) => {
-                setIsLoaded(true);
-                setError(error);
-            })}
-        else {
-            fetch(`https://swapi.dev/api/${params[0]}/${params[1]}`)
-            .then(res => res.json())
-            .then((result) => {
-                setIsLoaded(true);
-                if (params[0] === "planets")
-                    setListCharacters(result.residents);
-                else if (params[0] === "starships" || params[0] === "vehicles")
-                        setListCharacters(result.pilots);
-                    else
-                        setListCharacters(result.characters);
-                if (params[0] === "films") 
-                    setLabel(`from ${result.title}`);
-                else
-                    setLabel(`with ${result.name}`);
-            }, (error) => {
-                setIsLoaded(true);
-                setError(error);
+                if (res.success) {
+                    setResult(res);
+                }
             })
+            .catch(error => {;
+            console.error(error);
+            });
         }
-    }, [params]);
+        else {
+            getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
+                setIsLoaded(true);
+                if (res.success) {
+                    setResult(res);
+                }
+            })
+            .catch(error => {;
+            console.error(error);
+            });
+        }
+    }, [searchParams]);
 
-    if (error)
-        return <div>Error: {error.message}</div>
-    else if (!isLoaded) return <div>Loading...</div>
-        else return (
+    function switcher() {
+        switch (searchParams.get("category")) {
+            case "planets":
+                return result.residents.map(char => <PeopleShort character={char} key={char.url}/>)
+            case "vehicles":
+            case "starships":
+                return result.pilots.map(char => <PeopleShort character={char} key={char.url}/>)
+            default:
+                return result.characters.map(char => <PeopleShort character={char} key={char.url}/>)
+        }
+    }
+
+    if (!isLoaded) {
+        return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
+      } else {
+        return (
             <div>
-                <h1>People {basePage ? null : `${label}`}</h1>
-                {basePage ? listCharacters.map(char => <PeopleShort character={char.url} key={char.url}/>) : listCharacters.map(char => <PeopleShort character={char} key={char.url}/>)}
+                <h1>People {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
+                {basePage ? result.results.map(char => <PeopleShort character={char.url} key={char.url}/>) : switcher()}
             </div>
-        );
+        );  
+      }
 }
 
 export default PeopleList;

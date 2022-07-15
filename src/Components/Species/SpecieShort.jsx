@@ -1,45 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "./Species.module.css";
+import { getData } from "../../API";
 
 const SpecieShort = ({specie}) => {
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [name, setName] = useState("");
-    const [classification, setClassification] = useState("");
-    const [homeworld, setHomeworld] = useState("");
-    const [language, setLanguage] = useState("");
-    const [url, setUrl] = useState("");
-
     useEffect(() => {
-        fetch(specie)
-        .then(res => res.json())
-        .then((result) => {
-                setIsLoaded(true);
-                setName(result.name);
-                setClassification(result.classification);
-                setHomeworld(result.homeworld);
-                setLanguage(result.language);
-                setUrl(result.url);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
+        getData(specie).then(res => {
+            setIsLoaded(true);
+            if (res.success) {
+                setResult(res);
             }
-        );
-    });
+        })
+        .catch(error => {;
+          console.error(error);
+        });
+      }, [specie]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-      } else if (!isLoaded) {
+      if (!isLoaded) {
         return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
       } else {
         return (
-            <div>
-                <Link to={"/" + url.substring(url.indexOf("species"))}><h2>{name}</h2>
-                    <h5>Classification: {classification}</h5>
-                    <h5>Homeworld: {homeworld}</h5>
-                    <h5>Language: {language}</h5>
+            <div className={styles.listElement}>
+                <Link to={"/" + result.url.substring(result.url.indexOf("species"))}>{result.name}<br/>
+                    Classification: {result.classification}<br/>
+                    Language: {result.language}<br/>
                 </Link>
             </div>
         );

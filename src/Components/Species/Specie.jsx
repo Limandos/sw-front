@@ -1,62 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { getData } from "../../API";
 
 const Specie = () => {
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
-    const [name, setName] = useState("");
-    const [classification, setClassification] = useState("");
-    const [designation, setDesignation] = useState("");
-    const [averageHeight, setAverageHeight] = useState("");
-    const [skinColors, setSkinColors] = useState("");
-    const [hairColors, setHairColors] = useState("");
-    const [eyeColors, setEyeColors] = useState("");
-    const [averageLifespan, setAverageLifespan] = useState("");
-    const [homeworld, setHomeworld] = useState("");
-    const [language, setLanguage] = useState("");
 
     const { id } = useParams();
 
     useEffect(() => {
-        fetch("https://swapi.dev/api/species/" + id)
-        .then(res => res.json())
-        .then((result) => {
-                setIsLoaded(true);
-                setName(result.name);
-                setClassification(result.classification);
-                setDesignation(result.designation);
-                setAverageHeight(result.average_height);
-                setSkinColors(result.skin_colors);
-                setHairColors(result.hair_colors);
-                setEyeColors(result.eye_colors);
-                setAverageLifespan(result.average_lifespan);
-                setHomeworld(result.homeworld);
-                setLanguage(result.language);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
+        getData(`https://swapi.dev/api/species/${id}`).then(res => {
+            setIsLoaded(true);
+            if (res.success) {
+                setResult(res);
             }
-        );
-    });
+        })
+        .catch(error => console.error(error));
+    }, [id]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-      } else if (!isLoaded) {
+    if (!isLoaded) {
         return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error</div>;
       } else {
         return (
             <div>
-                <h1>{name}</h1>
-                <h2>Classification: {classification}</h2>
-                <h2>Designation: {designation}</h2>
-                <h2>Average height: {averageHeight}</h2>
-                <h2>Skin colors: {skinColors}</h2>
-                <h2>Hair colors: {hairColors}</h2>
-                <h2>Eye colors: {eyeColors}</h2>
-                <h2>Average lifespan: {averageLifespan}</h2>
-                <h3><Link to={`/${homeworld.substring(homeworld.indexOf("planets"))}`}>Homeworld</Link></h3>
-                <h2>Language: {language}</h2>
+                <h1>{result.name}</h1>
+                <h2>Classification: {result.classification}</h2>
+                <h2>Designation: {result.designation}</h2>
+                <h2>Average height: {result.average_height}</h2>
+                <h2>Skin colors: {result.skin_colors}</h2>
+                <h2>Hair colors: {result.hair_colors}</h2>
+                <h2>Eye colors: {result.eye_colors}</h2>
+                <h2>Average lifespan: {result.average_lifespan}</h2>
+                <h3><Link to={`/${result.homeworld.substring(result.homeworld.indexOf("planets"))}`}>Homeworld</Link></h3>
+                <h2>Language: {result.language}</h2>
             </div>
         );
       }

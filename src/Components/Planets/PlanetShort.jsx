@@ -1,45 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "./Planets.module.css";
+import { getData } from "../../API";
 
 const PlanetShort = ({planet}) => {
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [name, setName] = useState("");
-    const [gravity, setgravity] = useState("");
-    const [terrain, setTerrain] = useState("");
-    const [population, setPopulation] = useState(0);
-    const [url, setUrl] = useState("");
-
     useEffect(() => {
-        fetch(planet)
-        .then(res => res.json())
-        .then((result) => {
-                setIsLoaded(true);
-                setName(result.name);
-                setgravity(result.gravity);
-                setTerrain(result.terrain);
-                setPopulation(result.population);
-                setUrl(result.url);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
+        getData(planet).then(res => {
+            setIsLoaded(true);
+            if (res.success) {
+                setResult(res);
+                console.log(res);
             }
-        );
-    });
+        })
+        .catch(error => {;
+          console.error(error);
+        });
+      }, [planet]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-      } else if (!isLoaded) {
+      if (!isLoaded) {
         return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
       } else {
         return (
-            <div>
-                <Link to={"/" + url.substring(url.indexOf("planets"))}><h2>{name}</h2>
-                    <h5>Gravity: {gravity}</h5>
-                    <h5>Terrain: {terrain}</h5>
-                    <h5>Population: {population}</h5>
+            <div className={styles.listElement}>
+                <Link to={"/" + result.url.substring(result.url.indexOf("planets"))}>{result.name}<br/>
+                    Gravity: {result.gravity}<br/>
+                    Terrain: {result.terrain}<br/>
+                    Population: {result.population}<br/>
                 </Link>
             </div>
         );

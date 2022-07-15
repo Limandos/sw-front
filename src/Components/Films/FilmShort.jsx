@@ -1,41 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "./Films.module.css";
+import { getData } from "../../API";
 
 const FilmShort = ({film}) => {
-    const [error, setError] = useState(null);
+    const [result, setResult] = useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const [title, setTitle] = useState("");
-    const [episodeId, setEpisodeId] = useState(0);
-    const [releaseDate, setReleaseDate] = useState("");
-    const [url, setUrl] = useState();
-
     useEffect(() => {
-        fetch(film)
-        .then(res => res.json())
-        .then((result) => {
-                setIsLoaded(true);
-                setTitle(result.title);
-                setEpisodeId(result.episode_id);
-                setReleaseDate(result.release_date);
-                setUrl(result.url);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
+        getData(film).then(res => {
+            setIsLoaded(true);
+            if (res.success) {
+                setResult(res);
             }
-        );
-    });
+        })
+        .catch(error => {;
+          console.error(error);
+        });
+      }, [film]);
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-      } else if (!isLoaded) {
+      if (!isLoaded) {
         return <div>Loading...</div>;
+      } else if (!result.success) {
+        return <div>Error: open console to see log.</div>;
       } else {
         return (
-            <div>
-                <Link to={"/" + url.substring(url.indexOf("films"))}><h2>Episode {episodeId + ": " + title}</h2>
-                    <h5>Release Date: {releaseDate}</h5>
+            <div className={styles.element}>
+                <Link to={"/" + result.url.substring(result.url.indexOf("films"))}>Episode {result.episode_id + ": " + result.title}
+                    <br />
+                    Release Date: {result.release_date}
                 </Link>
             </div>
         );

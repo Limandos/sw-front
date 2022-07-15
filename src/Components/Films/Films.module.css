@@ -1,17 +1,15 @@
-.menu {
-    padding: 4px;
-    padding-top: 6px;
-    margin: 6px;
+.element {
+    padding: 10px;
     border: 3px solid;
+    margin: 8px;
     border-radius: 5px;
 }
 
-.menu a {
-    padding: inherit;
+.element * {
     text-decoration-line: none;
     font-size: large;
 }
 
-.menu a:hover {
+.element *:hover {
     color: #de4729;
 }
