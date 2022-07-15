@@ -19,7 +19,6 @@ const Planet = () => {
           console.error(error);
         });
       }, [id]);
-
     
     if (!isLoaded) {
         return <div>Loading...</div>;

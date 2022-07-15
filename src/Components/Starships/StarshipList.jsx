@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import StarshipShort from "./StarshipShort";
+import { pageButton } from "../PageButton/PageButton";
 import { getData } from "../../API";
 
 const StarshipList = () => {
@@ -14,7 +15,10 @@ const StarshipList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            getData(`https://swapi.dev/api/starships/`).then(res => {
+            let page = "";
+            if (searchParams.get("page"))
+                page = `?page=${searchParams.get("page")}`
+            getData(`https://swapi.dev/api/starships/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
                     setResult(res);
@@ -45,7 +49,10 @@ const StarshipList = () => {
         return (
             <div>
                 <h1>Starships {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
-                    {basePage ? result.results.map(star => <StarshipShort starship={star.url} key={star.url}/>) : result.starships.map(star => <StarshipShort starship={star} key={star.url}/>)}
+                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
+                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <br />
+                {basePage ? result.results.map(star => <StarshipShort starship={star.url} key={star.url}/>) : result.starships.map(star => <StarshipShort starship={star} key={star.url}/>)}
             </div>
         );
       }

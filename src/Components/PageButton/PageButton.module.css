@@ -1,0 +1,8 @@
+.pageButton {
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.pageButton:hover {
+    color: #de4729;
+}

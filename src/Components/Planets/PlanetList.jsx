@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PlanetShort from "./PlanetShort";
+import { pageButton } from "../PageButton/PageButton";
 import { getData } from "../../API";
 
 const PlanetList = () => {
@@ -14,7 +15,10 @@ const PlanetList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            getData(`https://swapi.dev/api/planets/`).then(res => {
+            let page = "";
+            if (searchParams.get("page"))
+                page = `?page=${searchParams.get("page")}`
+            getData(`https://swapi.dev/api/planets/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
                     setResult(res);
@@ -45,6 +49,9 @@ const PlanetList = () => {
         return (
             <div>
                 <h1>Planets {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
+                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
+                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <br />
                 {basePage ? result.results.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : result.planets.map(plan => <PlanetShort planet={plan} key={plan.url}/>)}
             </div>
         );

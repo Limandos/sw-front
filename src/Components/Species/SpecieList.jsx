@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SpecieShort from "./SpecieShort";
+import { pageButton } from "../PageButton/PageButton";
 import { getData } from "../../API";
 
 const SpecieList = () => {
@@ -14,7 +15,10 @@ const SpecieList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            getData(`https://swapi.dev/api/species/`).then(res => {
+            let page = "";
+            if (searchParams.get("page"))
+                page = `?page=${searchParams.get("page")}`
+            getData(`https://swapi.dev/api/species/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
                     setResult(res);
@@ -45,6 +49,9 @@ const SpecieList = () => {
         return (
             <div>
                 <h1>Species {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
+                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
+                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <br />
                 {basePage ? result.results.map(spec => <SpecieShort specie={spec.url} key={spec.url}/>) : result.species.map(spec => <SpecieShort specie={spec} key={spec.url}/>)}
             </div>
         );

@@ -15,15 +15,15 @@ const StarshipShort = ({starship}) => {
             }
         })
         .catch(error => {;
-          console.error(error);
+            console.error(error);
         });
-      }, [starship]);
+    }, [starship]);
 
-      if (!isLoaded) {
+    if (!isLoaded) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
+    } else if (!result.success) {
         return <div>Error: open console to see log.</div>;
-      } else {
+    } else {
         return (
             <div className={styles.listElement}>
                 <Link to={"/" + result.url.substring(result.url.indexOf("starships"))}>
@@ -34,7 +34,7 @@ const StarshipShort = ({starship}) => {
                 </Link>
             </div>
         );
-      }
+    }
 }
 
 export default StarshipShort;

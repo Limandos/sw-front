@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import VehicleShort from "./VehicleShort";
+import { pageButton } from "../PageButton/PageButton";
 import { getData } from "../../API";
 
 const VehicleList = () => {
@@ -14,7 +15,10 @@ const VehicleList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            getData(`https://swapi.dev/api/vehicles/`).then(res => {
+            let page = "";
+            if (searchParams.get("page"))
+                page = `?page=${searchParams.get("page")}`
+            getData(`https://swapi.dev/api/vehicles/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
                     setResult(res);
@@ -45,7 +49,10 @@ const VehicleList = () => {
         return (
           <div>
             <h1>Vehicles {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
-                {basePage ? result.results.map(veh => <VehicleShort vehicle={veh.url} key={veh.url}/>) : result.vehicles.map(veh => <VehicleShort vehicle={veh} key={veh.url}/>)}
+            {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
+            {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+            <br />
+            {basePage ? result.results.map(veh => <VehicleShort vehicle={veh.url} key={veh.url}/>) : result.vehicles.map(veh => <VehicleShort vehicle={veh} key={veh.url}/>)}
           </div>
       );
     }

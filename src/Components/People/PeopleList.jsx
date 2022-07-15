@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import PeopleShort from "./PeopleShort";
+import { pageButton } from "../PageButton/PageButton";
 import { getData } from "../../API";
 
 const PeopleList = () => {
@@ -14,7 +15,10 @@ const PeopleList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            getData(`https://swapi.dev/api/people/`).then(res => {
+            let page = "";
+            if (searchParams.get("page"))
+                page = `?page=${searchParams.get("page")}`
+            getData(`https://swapi.dev/api/people/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
                     setResult(res);
@@ -57,9 +61,12 @@ const PeopleList = () => {
         return (
             <div>
                 <h1>People {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
+                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
+                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <br />
                 {basePage ? result.results.map(char => <PeopleShort character={char.url} key={char.url}/>) : switcher()}
             </div>
-        );  
+        );
       }
 }
 

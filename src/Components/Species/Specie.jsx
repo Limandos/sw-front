@@ -37,7 +37,7 @@ const Specie = () => {
                 <h2>Language: {result.language}</h2>
             </div>
         );
-      }
+    }
 }
 
 export default Specie;
