@@ -52,7 +52,7 @@ const PlanetList = () => {
                 {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
                 {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : result.planets.map(plan => <PlanetShort planet={plan} key={plan.url}/>)}
+                {basePage ? result.results.map(plan => <PlanetShort planet={plan.url} key={plan.url}/>) : result.planets.map(plan => <PlanetShort planet={plan} key={plan}/>)}
             </div>
         );
       }

@@ -12,7 +12,6 @@ const PlanetShort = ({planet}) => {
             setIsLoaded(true);
             if (res.success) {
                 setResult(res);
-                console.log(res);
             }
         })
         .catch(error => {;

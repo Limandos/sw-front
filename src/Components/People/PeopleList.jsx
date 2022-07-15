@@ -44,12 +44,12 @@ const PeopleList = () => {
     function switcher() {
         switch (searchParams.get("category")) {
             case "planets":
-                return result.residents.map(char => <PeopleShort character={char} key={char.url}/>)
+                return result.residents.map(char => <PeopleShort character={char} key={char}/>)
             case "vehicles":
             case "starships":
-                return result.pilots.map(char => <PeopleShort character={char} key={char.url}/>)
+                return result.pilots.map(char => <PeopleShort character={char} key={char}/>)
             default:
-                return result.characters.map(char => <PeopleShort character={char} key={char.url}/>)
+                return result.characters.map(char => <PeopleShort character={char} key={char}/>)
         }
     }
 

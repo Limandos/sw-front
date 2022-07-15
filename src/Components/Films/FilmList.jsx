@@ -45,7 +45,7 @@ const FilmList = () => {
         return (
             <div>
                 <h1>Films {basePage ? null : `(with ${result.name})`}</h1>
-                {basePage ? result.results.map(film => <FilmShort film={film.url} key={film.url}/>) : result.films.map(film => <FilmShort film={film} key={film.url}/>)}
+                {basePage ? result.results.map(film => <FilmShort film={film.url} key={film.url}/>) : result.films.map(film => <FilmShort film={film} key={film}/>)}
             </div>
         );
       }

@@ -52,7 +52,7 @@ const SpecieList = () => {
                 {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
                 {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(spec => <SpecieShort specie={spec.url} key={spec.url}/>) : result.species.map(spec => <SpecieShort specie={spec} key={spec.url}/>)}
+                {basePage ? result.results.map(spec => <SpecieShort specie={spec.url} key={spec.url}/>) : result.species.map(spec => <SpecieShort specie={spec} key={spec}/>)}
             </div>
         );
       }

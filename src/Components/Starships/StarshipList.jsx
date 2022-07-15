@@ -52,7 +52,7 @@ const StarshipList = () => {
                 {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
                 {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(star => <StarshipShort starship={star.url} key={star.url}/>) : result.starships.map(star => <StarshipShort starship={star} key={star.url}/>)}
+                {basePage ? result.results.map(star => <StarshipShort starship={star.url} key={star.url}/>) : result.starships.map(star => <StarshipShort starship={star} key={star}/>)}
             </div>
         );
       }
