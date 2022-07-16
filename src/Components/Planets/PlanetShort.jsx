@@ -4,35 +4,38 @@ import styles from "./Planets.module.css";
 import { getData } from "../../API";
 
 const PlanetShort = ({planet}) => {
-    const [result, setResult] = useState({});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [planetData, setPlanetData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         getData(planet).then(res => {
-            setIsLoaded(true);
             if (res.success) {
-                setResult(res);
+              setPlanetData(res);
             }
         })
         .catch(error => {;
           console.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
       }, [planet]);
 
-      if (!isLoaded) {
+      if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (planetData.success) {
         return (
-            <div className={styles.listElement}>
-                <Link to={"/" + result.url.substring(result.url.indexOf("planets"))}>{result.name}<br/>
-                    Gravity: {result.gravity}<br/>
-                    Terrain: {result.terrain}<br/>
-                    Population: {result.population}<br/>
-                </Link>
-            </div>
-        );
+          <div className={styles.listElement}>
+              <Link to={"/" + planetData.url.substring(planetData.url.indexOf("planets"))}>{planetData.name}<br/>
+                  Gravity: {planetData.gravity}<br/>
+                  Terrain: {planetData.terrain}<br/>
+                  Population: {planetData.population}<br/>
+              </Link>
+          </div>
+      );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

@@ -3,40 +3,45 @@ import { Link, useParams } from "react-router-dom";
 import { getData } from "../../API";
 
 const Specie = () => {
-    const [result, setResult] = useState({});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [specieData, setSpecieData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const { id } = useParams();
 
     useEffect(() => {
+        setIsLoading(true);
         getData(`https://swapi.dev/api/species/${id}`).then(res => {
-            setIsLoaded(true);
             if (res.success) {
-                setResult(res);
+                setSpecieData(res);
             }
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+            console.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }, [id]);
 
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error</div>;
-      } else {
+      } else if (specieData.success) {
         return (
             <div>
-                <h1>{result.name}</h1>
-                <h2>Classification: {result.classification}</h2>
-                <h2>Designation: {result.designation}</h2>
-                <h2>Average height: {result.average_height}</h2>
-                <h2>Skin colors: {result.skin_colors}</h2>
-                <h2>Hair colors: {result.hair_colors}</h2>
-                <h2>Eye colors: {result.eye_colors}</h2>
-                <h2>Average lifespan: {result.average_lifespan}</h2>
-                <h3><Link to={`/${result.homeworld.substring(result.homeworld.indexOf("planets"))}`}>Homeworld</Link></h3>
-                <h2>Language: {result.language}</h2>
+                <h1>{specieData.name}</h1>
+                <h2>Classification: {specieData.classification}</h2>
+                <h2>Designation: {specieData.designation}</h2>
+                <h2>Average height: {specieData.average_height}</h2>
+                <h2>Skin colors: {specieData.skin_colors}</h2>
+                <h2>Hair colors: {specieData.hair_colors}</h2>
+                <h2>Eye colors: {specieData.eye_colors}</h2>
+                <h2>Average lifespan: {specieData.average_lifespan}</h2>
+                <h3><Link to={`/${specieData.homeworld.substring(specieData.homeworld.indexOf("planets"))}`}>Homeworld</Link></h3>
+                <h2>Language: {specieData.language}</h2>
             </div>
         );
+      } else {
+        return <div>Error: open console to see log.</div>;
     }
 }
 

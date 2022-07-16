@@ -5,49 +5,58 @@ import { getData } from "../../API";
 
 const FilmList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [result, setResult] = useState([]);
+    const [filmsData, setFilmsData] = useState({});
 
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
+            setIsLoading(true);
             getData(`https://swapi.dev/api/films/`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setFilmsData(res);
                 }
             })
             .catch(error => {;
                 console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
         else {
+            setIsLoading(true);
             getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setFilmsData(res);
                 }
             })
             .catch(error => {;
                 console.error(error);
-            });
+            })
+            .finally(() => {
+              setIsLoading(false);
+            });;
         }
     }, [searchParams]);
 
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (filmsData.success) {
+        const filmsForView = filmsData.results || filmsData?.films || [];
         return (
             <div>
-                <h1>Films {basePage ? null : `(with ${result.name})`}</h1>
-                {basePage ? result.results.map(film => <FilmShort film={film.url} key={film.url}/>) : result.films.map(film => <FilmShort film={film} key={film}/>)}
+                <h1>Films {!basePage && ` (with ${filmsData.name})`}</h1>
+                {filmsForView.map(film => <FilmShort film={film.url || film} key={film.url || film}/>)}
             </div>
         );
+      } else {
+        return (
+            <div>Error: open console to see log.</div>
+        )
       }
 }
 

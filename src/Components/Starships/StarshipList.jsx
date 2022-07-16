@@ -6,53 +6,60 @@ import { getData } from "../../API";
 
 const StarshipList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [result, setResult] = useState([]);
+    const [starshipsData, setStarshipsData] = useState([]);
 
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (!searchParams.get("category")) {
+            setIsLoading(true);
             setBasePage(true);
             let page = searchParams.get("page") ? `?page=${searchParams.get("page")}` : "";
             getData(`https://swapi.dev/api/starships/${page}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setStarshipsData(res);
                 }
             })
             .catch(error => {;
-            console.error(error);
+                console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
         else {
+            setIsLoading(true);
             getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setStarshipsData(res);
                 }
             })
             .catch(error => {;
-            console.error(error);
+                console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
     }, [searchParams]);
 
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (starshipsData.success) {
+        const starshipsForView = starshipsData.results || starshipsData.starships || [];
         return (
             <div>
-                <h1>Starships {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
-                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
-                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <h1>Starships {!basePage && `(with ${searchParams.get("category") === "films" ? starshipsData.title : starshipsData.name})`}</h1>
+                {starshipsData.previous ? pageButton("Previous page", starshipsData.previous.substring(starshipsData.previous.indexOf("?"))) : null}
+                {starshipsData.next ? pageButton("Next page", starshipsData.next.substring(starshipsData.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(star => <StarshipShort starship={star.url} key={star.url}/>) : result.starships.map(star => <StarshipShort starship={star} key={star}/>)}
+                {starshipsForView.map(star => <StarshipShort starship={star.url || star} key={star.url || star}/>)}
             </div>
         );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

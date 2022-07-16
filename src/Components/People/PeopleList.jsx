@@ -6,65 +6,60 @@ import { getData } from "../../API";
 
 const PeopleList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [result, setResult] = useState([]);
+    const [peopleData, setPeopleData] = useState([]);
 
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (!searchParams.get("category")) {
+            setIsLoading(true);
             setBasePage(true);
             let page = searchParams.get("page") ? `?page=${searchParams.get("page")}` : "";
             getData(`https://swapi.dev/api/people/${page}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setPeopleData(res);
                 }
             })
             .catch(error => {;
-            console.error(error);
+                console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
         else {
+            setIsLoading(true);
             getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setPeopleData(res);
                 }
             })
             .catch(error => {;
-            console.error(error);
+                console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
     }, [searchParams]);
 
-    function switcher() {
-        switch (searchParams.get("category")) {
-            case "planets":
-                return result.residents.map(char => <PeopleShort character={char} key={char}/>)
-            case "vehicles":
-            case "starships":
-                return result.pilots.map(char => <PeopleShort character={char} key={char}/>)
-            default:
-                return result.characters.map(char => <PeopleShort character={char} key={char}/>)
-        }
-    }
-
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (peopleData.success) {
+        const peopleForView = peopleData.results || peopleData.characters || peopleData.pilots || peopleData.residents || [];
         return (
             <div>
-                <h1>People {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
-                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
-                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <h1>People {!basePage && `(with ${searchParams.get("category") === "films" ? peopleData.title : peopleData.name})`}</h1>
+                {peopleData.previous ? pageButton("Previous page", peopleData.previous.substring(peopleData.previous.indexOf("?"))) : null}
+                {peopleData.next ? pageButton("Next page", peopleData.next.substring(peopleData.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(char => <PeopleShort character={char.url} key={char.url}/>) : switcher()}
+                {peopleForView.map(char => <PeopleShort character={char.url || char} key={char.url || char}/>)}
             </div>
         );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

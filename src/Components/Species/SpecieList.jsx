@@ -6,20 +6,21 @@ import { getData } from "../../API";
 
 const SpecieList = () => {
     const [basePage, setBasePage] = useState(false);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [result, setResult] = useState([]);
+    const [speciesData, setSpeciesData] = useState([]);
 
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
+            setIsLoading(true);
             let page = searchParams.get("page") ? `?page=${searchParams.get("page")}` : "";
             getData(`https://swapi.dev/api/species/${page}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setSpeciesData(res);
+                    setIsLoading(false);
                 }
             })
             .catch(error => {;
@@ -27,32 +28,36 @@ const SpecieList = () => {
             });
         }
         else {
+            setIsLoading(true);
             getData(`https://swapi.dev/api/${searchParams.get("category")}/${searchParams.get("id")}`).then(res => {
-                setIsLoaded(true);
                 if (res.success) {
-                    setResult(res);
+                    setSpeciesData(res);
                 }
             })
-            .catch(error => {;
-            console.error(error);
+            .catch(error => {
+                console.error(error);
+            })
+            .finally(() => {
+              setIsLoading(false);
             });
         }
     }, [searchParams]);
 
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (speciesData.success) {
+        const planetsForView = speciesData.results || speciesData.species || [];
         return (
             <div>
-                <h1>Species {basePage ? null : `(with ${searchParams.get("category") === "films" ? result.title : result.name})`}</h1>
-                {result.previous ? pageButton("Previous page", result.previous.substring(result.previous.indexOf("?"))) : null}
-                {result.next ? pageButton("Next page", result.next.substring(result.next.indexOf("?"))) : null}
+                <h1>Species {basePage ? null : `(with ${searchParams.get("category") === "films" ? speciesData.title : speciesData.name})`}</h1>
+                {speciesData.previous ? pageButton("Previous page", speciesData.previous.substring(speciesData.previous.indexOf("?"))) : null}
+                {speciesData.next ? pageButton("Next page", speciesData.next.substring(speciesData.next.indexOf("?"))) : null}
                 <br />
-                {basePage ? result.results.map(spec => <SpecieShort specie={spec.url} key={spec.url}/>) : result.species.map(spec => <SpecieShort specie={spec} key={spec}/>)}
+                {planetsForView.map(spec => <SpecieShort specie={spec.url || spec} key={spec.url || spec}/>)}
             </div>
         );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

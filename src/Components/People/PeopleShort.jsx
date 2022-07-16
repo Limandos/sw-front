@@ -4,14 +4,15 @@ import styles from "./People.module.css";
 import { getData } from "../../API";
 
 const PeopleShort = ({character}) => {
-    const [result, setResult] = useState({});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [peopleData, setPeopleData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         getData(character).then(res => {
-            setIsLoaded(true);
             if (res.success) {
-                setResult(res);
+                setPeopleData(res);
+                setIsLoading(false);
             }
         })
         .catch(error => {;
@@ -19,20 +20,20 @@ const PeopleShort = ({character}) => {
         });
       }, [character]);
 
-      if (!isLoaded) {
+      if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (peopleData.success) {
         return (
-            <div className={styles.element}>
-                <Link to={"/" + result.url.substring(result.url.indexOf("people"))}>
-                    {result.name}<br />
-                    Gender: {result.gender}<br />
-                    Birth year: {result.birth_year}
-                </Link>
-            </div>
-        );
+          <div className={styles.element}>
+              <Link to={"/" + peopleData.url.substring(peopleData.url.indexOf("people"))}>
+                  {peopleData.name}<br />
+                  Gender: {peopleData.gender}<br />
+                  Birth year: {peopleData.birth_year}
+              </Link>
+          </div>
+      );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

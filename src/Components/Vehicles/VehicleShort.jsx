@@ -4,36 +4,39 @@ import styles from "./Vehicles.module.css";
 import { getData } from "../../API";
 
 const VehicleShort = ({vehicle}) => {
-    const [result, setResult] = useState({});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [vehicleData, setVehicleData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        setIsLoading(true);
         getData(vehicle).then(res => {
-            setIsLoaded(true);
             if (res.success) {
-                setResult(res);
+                setVehicleData(res);
             }
         })
         .catch(error => {;
             console.error(error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
       }, [vehicle]);
 
-      if (!isLoaded) {
+      if (isLoading) {
         return <div>Loading...</div>;
-      } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-      } else {
+      } else if (vehicleData.success) {
         return (
-            <div className={styles.listElement}>
-                <Link to={"/" + result.url.substring(result.url.indexOf("vehicles"))}>
-                    {result.name}<br />
-                    Model: {result.model}<br />
-                    Cost in credits: {result.cost_in_credits}<br />
-                    Max atmosphering speed: {result.max_atmosphering_speed}<br />
-                </Link>
-            </div>
-        );
+          <div className={styles.listElement}>
+              <Link to={"/" + vehicleData.url.substring(vehicleData.url.indexOf("vehicles"))}>
+                  {vehicleData.name}<br />
+                  Model: {vehicleData.model}<br />
+                  Cost in credits: {vehicleData.cost_in_credits}<br />
+                  Max atmosphering speed: {vehicleData.max_atmosphering_speed}<br />
+              </Link>
+          </div>
+      );
+      } else {
+        return <div>Error: open console to see log.</div>;
       }
 }
 

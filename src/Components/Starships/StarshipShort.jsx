@@ -4,36 +4,39 @@ import styles from "./Starships.module.css";
 import { getData } from "../../API";
 
 const StarshipShort = ({starship}) => {
-    const [result, setResult] = useState({});
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [starshipData, setStarshipData] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getData(starship).then(res => {
-            setIsLoaded(true);
+            setIsLoading(true);
             if (res.success) {
-                setResult(res);
+                setStarshipData(res);
             }
         })
         .catch(error => {;
             console.error(error);
+        })
+        .finally(() => {
+            setIsLoading(false);
         });
     }, [starship]);
 
-    if (!isLoaded) {
+    if (isLoading) {
         return <div>Loading...</div>;
-    } else if (!result.success) {
-        return <div>Error: open console to see log.</div>;
-    } else {
+    } else if (starshipData.success) {
         return (
             <div className={styles.listElement}>
-                <Link to={"/" + result.url.substring(result.url.indexOf("starships"))}>
-                    {result.name}<br/>
-                    Model: {result.model}<br/>
-                    Cost in credits: {result.cost_in_credits}<br/>
-                    Hyperdrive rating: {result.hyperdrive_rating}
+                <Link to={"/" + starshipData.url.substring(starshipData.url.indexOf("starships"))}>
+                    {starshipData.name}<br/>
+                    Model: {starshipData.model}<br/>
+                    Cost in credits: {starshipData.cost_in_credits}<br/>
+                    Hyperdrive rating: {starshipData.hyperdrive_rating}
                 </Link>
             </div>
         );
+    } else {
+        return <div>Error: open console to see log.</div>;
     }
 }
 
