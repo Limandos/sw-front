@@ -2,7 +2,7 @@ export async function getData(url) {
     const response = await fetch(url);
     if (response.ok) {
         const json = await response.json();
-        return { ...json, succes: true }
+        return { ...json, success: true }
     }
     else {
         //console.error(response.statusText)
