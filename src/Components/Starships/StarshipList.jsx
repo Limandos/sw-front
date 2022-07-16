@@ -15,9 +15,7 @@ const StarshipList = () => {
     useEffect(() => {
         if (!searchParams.get("category")) {
             setBasePage(true);
-            let page = "";
-            if (searchParams.get("page"))
-                page = `?page=${searchParams.get("page")}`
+            let page = searchParams.get("page") ? `?page=${searchParams.get("page")}` : "";
             getData(`https://swapi.dev/api/starships/${page}`).then(res => {
                 setIsLoaded(true);
                 if (res.success) {
